@@ -1,0 +1,1 @@
+# persia-shell-venv
