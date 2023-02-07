@@ -4,40 +4,22 @@ This is repository designed to support shell automation scripts for virtual envi
 
 With this script it is possible to create a small castle to store the python execution packages without external interference.
 
-## Shebang and his behaviors
+## Technical Specifications
 
-Before some important points about the types of shebang that should be used in the shell script.
+For a perfect execution, I chose to use a configuration file [init.conf](https://github.com/rodrigmars/persia-shell-venv/blob/main/init.conf) that loads necessary information and dependencies as follows:
 
-Simple portability to legacy systems:
-
-```shell
-#!/bin/sh
-```
-
-For extra features
-
-```shell
-#!/bin/bash
-```
-
-Sets an absolute */usr/bin/bash* path to Bash. Low portability for systems that have other interpreters installed, more security
-
-```shell
-#!/usr/bin/bash
-```
-
-The *-r* option enables strict shell mode.
-
-```shell
-#!/usr/bin/bash -r
-```
-
-First it displays the environment variables and then executes the commands with the given interpreter, it offers more portability.
-
-```shell
-#!/usr/bin/env bash
-```
-
+- project_name
+  - project name information
+  
+- DIR_TESTS
+  - test directory
+  
+- DIR_VENV
+  - venv directory
+  
+- LIBS_PYTHON
+  - python library list
+  
 ## How to run it
 
 ```bash
