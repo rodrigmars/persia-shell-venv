@@ -26,32 +26,51 @@ creatingEnvironment() {
 
     mkdir $PROJECT_NAME && cd $PROJECT_NAME
 
-    exec pwd
+    mkdir $PROJECT_NAME
 
-    for item in $LIBS_PYTHON[@]
-    do
-        echo $item
-    done
+    mkdir $DIR_TESTS
 
-    # printf "Full path to " && exec pwd
+    $(python -m venv venv-$PROJECT_NAME)
 
-    # mkdir $PROJECT_NAME
+    printf "PROJECT_NAME:venv-$PROJECT_NAME\n"
 
-    # mkdir DIR_TESTS
+    source venv-$PROJECT_NAME/bin/activate
 
-    # touch $DIR_PROJECT/__init__.py
+    printf "PATH:$(which python)\n"
 
-    # touch $DIR_PROJECT/app.py
+    printf "PYTHON_VERSION:$(python --version)\n" 
+    
+    python -m pip install --upgrade pip
 
-    # touch $DIR_TESTS/__init__.py
+    if $VERBOSE; then
 
-    # touch $DIR_TESTS/test_main.py
+        printf "\n${YELLOW}Starting the installation of libraries${COLOR_OFF}\n"
 
-    # python -m venv $VENV_FOLDER
+        for item in $LIBS_PYTHON
+        do
+            pip install $item
+        done
 
-    # source $VENV_FOLDER/bin/activate
+        printf "\n${YELLOW}Collecting data from installed libraries${COLOR_OFF}\n"
 
-    # code $PROJECT_NAME
+        for item in $LIBS_PYTHON
+        do
+            lib=$(pip show $item)
+
+            printf "\n$lib\n"
+
+        done
+     fi
+
+    deactivate
+
+    touch $PROJECT_NAME/__init__.py
+
+    touch $PROJECT_NAME/app.py
+
+    touch $DIR_TESTS/__init__.py
+
+    touch $DIR_TESTS/test_main.py
 
 }
 
