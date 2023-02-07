@@ -6,6 +6,8 @@ With this script it is possible to create a small castle to store the python exe
 
 ## Shebang and his behaviors
 
+Before some important points about the types of shebang that should be used in the shell script.
+
 Simple portability to legacy systems:
 
 ```shell
