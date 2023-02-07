@@ -14,9 +14,6 @@ For a perfect execution, I chose to use a configuration file [init.conf](https:/
 - DIR_TESTS
   - test directory
   
-- DIR_VENV
-  - venv directory
-  
 - VERBOSE
   - verbosity in debug output
 
