@@ -4,12 +4,12 @@
 
 checkParameters() {
 
-    if [[ -z $dir_root ]]; then
+    if [[ -z $PROJECT_NAME ]]; then
         printf "${YELLOW}Please enter a valid project name\n${COLOR_OFF}"
         exit 1
     fi
 
-    if [[ $dir_root =~ [^a-zA-Z0-9_] ]]; then
+    if [[ $PROJECT_NAME =~ [^a-zA-Z0-9_-] ]]; then
         printf "${YELLOW}Enter only numbers and letters\n${COLOR_OFF}"
         exit 1
     fi
@@ -19,18 +19,23 @@ checkParameters() {
 
 creatingEnvironment() {
 
-    if [[ -d $dir_root ]]; then
-        printf "${YELLOW} Directory $dir_root already exists, please check ${COLOR_OFF}\n"
+    if [[ -d $PROJECT_NAME ]]; then
+        printf "${YELLOW} Directory $PROJECT_NAME already exists, please check ${COLOR_OFF}\n"
         exit 1
     fi
 
-    mkdir $dir_root
+    mkdir $PROJECT_NAME && cd $PROJECT_NAME
 
-    # cd pastabomba/
+    exec pwd
+
+    for item in $LIBS_PYTHON[@]
+    do
+        echo $item
+    done
 
     # printf "Full path to " && exec pwd
 
-    # mkdir $dir_root
+    # mkdir $PROJECT_NAME
 
     # mkdir DIR_TESTS
 
@@ -46,7 +51,7 @@ creatingEnvironment() {
 
     # source $VENV_FOLDER/bin/activate
 
-    # code $dir_root
+    # code $PROJECT_NAME
 
 }
 
@@ -54,7 +59,7 @@ if checkParameters; then
 
     creatingEnvironment
 
-    printf "${GREEN}Virtual environment created for $dir_root${COLOR_OFF}\n"
+    printf "${GREEN}Virtual environment created for $PROJECT_NAME${COLOR_OFF}\n"
 
     # tree
 
