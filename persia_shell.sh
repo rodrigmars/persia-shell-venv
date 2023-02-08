@@ -61,11 +61,6 @@ creatingEnvironment() {
     logMessage "PYTHON_VERSION:${YELLOW}$(python --version)" 
 }
 
-logMessage() {
-
-    printf "${GREEN}$1 🟢${COLOR_OFF}\n\n"
-}
-
 updatingPIP() {
 
     logMessage "updating pip tool..."
