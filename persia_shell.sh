@@ -70,16 +70,6 @@ createModules() {
 
 }
 
-createRequirements() {
-
-    printf "\n${YELLOW}generate requirements ...${COLOR_OFF}\n\n"
-
-    $(pip freeze | grep -i $sentence > requirements.txt)
-
-    printf "\n${YELLOW}... nothing else to do ...${COLOR_OFF}\n\n"
-
-}
-
 
 creatingEnvironment() {
 
@@ -113,7 +103,8 @@ configLibs() {
         printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
 
         if [[ counter -lt total-1 ]]; then
-            sentence+=$item"\|"
+            # sentence+=$item"\|"
+            sentence+=$item"|"
         else
             sentence+=$item
         fi
@@ -135,10 +126,20 @@ configLibs() {
     fi
 }
 
+createRequirements() {
 
-if [[ checkProjectExists -eq 0 ]]; then
+    printf "\n${YELLOW}generate requirements ...${COLOR_OFF}\n\n"
 
-    if [[ checkParameters -eq 0 ]]; then
+    # $(pip freeze | grep -i $sentence > requirements.txt)
+    $(pip freeze | grep -E $sentence > requirements.txt)
+
+    printf "\n${YELLOW}... nothing else to do ...${COLOR_OFF}\n\n"
+
+}
+
+if checkProjectExists; then
+
+    if checkParameters; then
 
         printf "\n\n\n${GREEN}[¬º-°]¬${RED}.*･｡ﾟ>>...${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION...${GREEN}ԅ(≖‿≖ԅ)\n\n\n"
 
