@@ -77,10 +77,7 @@ creatingEnvironment() {
     
     printf "${GREEN}UPDATING PIP TOOL${RED}...<<${COLOR_OFF}\n\n"
 
-    python -m $comando --upgrade pip
-
-    printf "\n${YELLOW}DOWNLOADING AND INSTALLING LIBRARIES${COLOR_OFF}\n\n"
-   
+    python -m $comando --upgrade pip   
 }
 
 configLibs() {
@@ -91,32 +88,25 @@ configLibs() {
 
     python_library=""
 
-    {
-        for item in ${LIBS_PYTHON[@]}
-        do
-        
-            python_library=$item
+    for item in ${LIBS_PYTHON[@]}
+    do
+    
+        python_library=$item
 
-            $comando $item
+        $comando $item
 
-            printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
+        printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
 
-            let COUNTER++
+        let COUNTER++
 
-            if [[ COUNTER -lt $LEN_LIBS_PYTHON ]]; then
-                requirements+=$item"\|"
-            else
-                requirements+=$item
-            fi
+        if [[ COUNTER -lt $LEN_LIBS_PYTHON ]]; then
+            requirements+=$item"\|"
+        else
+            requirements+=$item
+        fi
 
-            sleep 3
-        done
-
-    } || {
-        printf "${RED}Erro:=${YELLOW}Failed to install python library $python_library 🔴${COLOR_OFF}\n"
-    }
-
-    printf "\n${YELLOW}libraries successfully installed 🟢${COLOR_OFF}\n\n"
+        sleep 3
+    done
 
     if [[ $VERBOSE -eq 0 ]]; then 
         
@@ -130,11 +120,21 @@ configLibs() {
     fi
 }
 
-createRequirements() {
+managePythonLibraries() {
 
     requirements=""
 
-    configLibs
+    printf "\n${yellow}downloading and installing libraries...🟡${color_off}\n\n"
+
+    {
+        configLibs
+    } || {
+        printf "${RED}Erro:=${YELLOW}Failed to install python library $python_library 🔴${COLOR_OFF}\n"
+        exit 1
+    }
+
+    printf "\n${YELLOW}libraries successfully installed 🟢${COLOR_OFF}\n\n"
+
 
     printf "${YELLOW}requirements being generated...🟡${COLOR_OFF}\n\n"
 
@@ -160,8 +160,6 @@ if checkProjectExists; then
         createModules
 
         creatingEnvironment
-
-        createRequirements
 
         printf "${YELLOW}Virtual environment created for $PROJECT_NAME 🟢${COLOR_OFF}\n\n"
 
