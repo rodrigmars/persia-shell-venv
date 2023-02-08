@@ -72,43 +72,29 @@ updatingPIP() {
     logMessage "pip updated to version:${YELLOW}\n$(pip --version)"
 }
 
-configLibs() {
+install_python_libraries() {
 
     logMessage "downloading and installing libraries..."
     
-    COUNTER=0
-
-    LEN_LIBS_PYTHON=${#LIBS_PYTHON[@]}
-
-    for item in ${LIBS_PYTHON[@]}
+    for item in $LIBS_PYTHON
     do
     
         $comando $item || logExitError "Error installing package $item"
 
         printf "${YELLOW}>>...lib $item\n\n"
 
-        let COUNTER++
-
-        if [[ COUNTER -lt $LEN_LIBS_PYTHON ]]; then
-            requirements+=$item"\|"
-        else
-            requirements+=$item
-        fi
-
         sleep 3
     done
-    
+
     logMessage "libraries successfully installed"
 
 }
 
-managePythonLibraries() {
-
-    requirements=""
-
-    configLibs
+create_requirements_file() {
 
     logMessage "requirements being generated..."
+
+    requirements=${LIBS_PYTHON// /\\|}
 
     [[ ! -n $requirements ]] && logExitError "No python libraries to compose requirements file"
 
@@ -138,7 +124,9 @@ if checkProjectExists; then
 
         updatingPIP
 
-        managePythonLibraries
+        install_python_libraries
+
+        create_requirements_file
 
         logMessage "Virtual environment created for $PROJECT_NAME"
 
@@ -150,3 +138,4 @@ if checkProjectExists; then
     fi
 
 fi
+
