@@ -20,6 +20,9 @@ For a perfect execution, I chose to use a configuration file [init.conf](https:/
 - VERBOSE
   - verbosity in debug output
 
+- REQUIREMENTS_FILE
+  - takes requirements file name
+
 ## How to run it
 
 ```bash

@@ -3,7 +3,7 @@
 . init.conf
 
 checkProjectExists() {
-    
+
     MESSAGE_ERROR="Directory $PROJECT_NAME already exists, please check"
 
     [[ -d $PROJECT_NAME ]] && logExitError "$MESSAGE_ERROR" || return 0
@@ -112,9 +112,9 @@ managePythonLibraries() {
 
     [[ ! -n $requirements ]] && logExitError "No python libraries to compose requirements file"
 
-    $(pip freeze | grep -i $requirements > requirements.txt) || logExitError
-    
-    # "Error when trying to generate requirements file"
+    $(pip freeze | grep -i $requirements > "$REQUIREMENTS_FILE" || logExitError)
+
+    [[ ! -s "$REQUIREMENTS_FILE" ]] && logExitError "Error when trying to generate requirements file" || 
 
     logMessage "requirements successfully generated"
 
@@ -123,6 +123,8 @@ managePythonLibraries() {
 if checkProjectExists; then
 
     if checkParameters; then
+
+        [[ -s $REQUIREMENTS_FILE ]] && logExitError "Error when trying to generate requirements file"
 
         clear
 
