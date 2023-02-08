@@ -2,6 +2,17 @@
 
 . init.conf
 
+checkProjectExists() {
+
+    if [[ -d $PROJECT_NAME ]]; then
+        printf "${YELLOW} Directory $PROJECT_NAME already exists, please check ${COLOR_OFF}\n"
+        exit 1
+    fi
+
+    return 0
+}
+
+
 checkParameters() {
 
     if [[ -z $PROJECT_NAME ]]; then
@@ -17,12 +28,7 @@ checkParameters() {
     return 0
 }
 
-creatingEnvironment() {
-
-    if [[ -d $PROJECT_NAME ]]; then
-        printf "${YELLOW} Directory $PROJECT_NAME already exists, please check ${COLOR_OFF}\n"
-        exit 1
-    fi
+createPackages() {
 
     printf "${GREEN}CREATING THE PACKAGES${RED}...<<${COLOR_OFF}\n\n"
 
@@ -42,6 +48,41 @@ creatingEnvironment() {
 
     printf "PROJECT_NAME:venv-$PROJECT_NAME\n"
 
+}
+
+createModules() {
+
+    # printf $sentence
+
+    printf "\n${YELLOW}... libraries successfully installed ...${COLOR_OFF}\n\n"
+
+    printf "\n${YELLOW}･｡･｡ creating development modules${COLOR_OFF}\n\n"
+
+    touch $PROJECT_NAME/__init__.py
+
+    touch $PROJECT_NAME/app.py
+
+    printf "\n${YELLOW}･｡･｡ creating test modules${COLOR_OFF}\n\n"
+
+    touch $DIR_TESTS/__init__.py
+
+    touch $DIR_TESTS/test_main.py
+
+}
+
+createRequirements() {
+
+    printf "\n${YELLOW}generate requirements ...${COLOR_OFF}\n\n"
+
+    $(pip freeze | grep -i $sentence > requirements.txt)
+
+    printf "\n${YELLOW}... nothing else to do ...${COLOR_OFF}\n\n"
+
+}
+
+
+creatingEnvironment() {
+
     source venv-$PROJECT_NAME/bin/activate
 
     printf "PATH:$(which python)\n"
@@ -55,10 +96,14 @@ creatingEnvironment() {
     python -m $comando --upgrade pip
 
     printf "\n${YELLOW}DOWNLOADING AND INSTALLING LIBRARIES${COLOR_OFF}\n\n"
-    
-    total=${#LIBS_PYTHON[@]}
+   
+}
 
+configLibs() {
+ 
     counter=0
+
+    total=${#LIBS_PYTHON[@]}
 
     for item in ${LIBS_PYTHON[@]}
     do
@@ -88,41 +133,32 @@ creatingEnvironment() {
             sleep 3
         done
     fi
-
-    printf $sentence
-
-    printf "\n${YELLOW}... libraries successfully installed ...${COLOR_OFF}\n\n"
-
-    printf "\n${YELLOW}･｡･｡ creating development modules${COLOR_OFF}\n\n"
-
-    touch $PROJECT_NAME/__init__.py
-
-    touch $PROJECT_NAME/app.py
-
-    printf "\n${YELLOW}･｡･｡ creating test modules${COLOR_OFF}\n\n"
-
-    touch $DIR_TESTS/__init__.py
-
-    touch $DIR_TESTS/test_main.py
-    
-    printf "\n${YELLOW}generate requirements ...${COLOR_OFF}\n\n"
-
-    $(pip freeze | grep -i $sentence > requirements.txt)
-
-    printf "\n${YELLOW}... nothing else to do ...${COLOR_OFF}\n\n"
-
 }
 
-if checkParameters; then
-    
-    printf "\n\n\n${GREEN}[¬º-°]¬${RED}.*･｡ﾟ>>...${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION...${GREEN}ԅ(≖‿≖ԅ)\n\n\n"
 
-    creatingEnvironment
-  
-    printf "\n${YELLOW}Virtual environment created for $PROJECT_NAME ${COLOR_OFF}\n\n\n"
+if [[ checkProjectExists -eq 0 ]]; then
 
-    deactivate
+    if [[ checkParameters -eq 0 ]]; then
 
-    exit 0
+        printf "\n\n\n${GREEN}[¬º-°]¬${RED}.*･｡ﾟ>>...${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION...${GREEN}ԅ(≖‿≖ԅ)\n\n\n"
+
+        createPackages
+
+        createModules
+
+        creatingEnvironment
+
+        configLibs
+
+        createRequirements
+
+        printf "${GREEN}ԅ(≖‿≖ԅ)\n\n\n"
+
+        printf "\n${YELLOW}Virtual environment created for $PROJECT_NAME ${COLOR_OFF}\n\n\n"
+
+        deactivate
+
+        exit 0
+    fi
 
 fi
