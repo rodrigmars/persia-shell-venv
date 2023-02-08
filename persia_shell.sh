@@ -99,20 +99,22 @@ configLibs() {
     do
     
         $comando $item
-        
+
         printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
 
-        if [[ counter -lt total-1 ]]; then
-            # sentence+=$item"\|"
+        let counter++
+
+        if [[ counter -lt total ]]; then
             sentence+=$item"|"
         else
             sentence+=$item
         fi
 
-        let counter++
-
         sleep 3
     done
+
+    printf $sentence
+
 
     if [[ $VERBOSE -eq 0 ]]; then 
         
