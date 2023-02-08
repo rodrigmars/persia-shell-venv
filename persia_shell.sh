@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . init.conf
-stty -echo
 
 checkParameters() {
 
@@ -56,13 +55,29 @@ creatingEnvironment() {
     python -m $comando --upgrade pip
 
     printf "\n${YELLOW}DOWNLOADING AND INSTALLING LIBRARIES${COLOR_OFF}\n\n"
-
-    for item in $LIBS_PYTHON
-    do
-        $comando $item
-        printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
-    done
     
+    total=${#LIBS_PYTHON[@]}
+
+    counter=0
+
+    for item in ${LIBS_PYTHON[@]}
+    do
+    
+        $comando $item
+        
+        printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
+
+        if [[ counter -lt total-1 ]]; then
+            sentence+=$item"\|"
+        else
+            sentence+=$item
+        fi
+
+        let counter++
+
+        sleep 3
+    done
+
     if [[ $VERBOSE -eq 0 ]]; then 
         
         printf "\n${YELLOW}Collecting data from installed libraries${COLOR_OFF}\n\n"
@@ -70,16 +85,15 @@ creatingEnvironment() {
         for item in $LIBS_PYTHON
         do
             pip show $item
+            sleep 3
         done
     fi
 
+    printf $sentence
+
     printf "\n${YELLOW}... libraries successfully installed ...${COLOR_OFF}\n\n"
 
-    # stty echo
-
     printf "\n${YELLOW}･｡･｡ creating development modules${COLOR_OFF}\n\n"
-
-    deactivate
 
     touch $PROJECT_NAME/__init__.py
 
@@ -90,6 +104,10 @@ creatingEnvironment() {
     touch $DIR_TESTS/__init__.py
 
     touch $DIR_TESTS/test_main.py
+    
+    printf "\n${YELLOW}generate requirements ...${COLOR_OFF}\n\n"
+
+    $(pip freeze | grep -i $sentence > requirements.txt)
 
     printf "\n${YELLOW}... nothing else to do ...${COLOR_OFF}\n\n"
 
@@ -102,6 +120,8 @@ if checkParameters; then
     creatingEnvironment
   
     printf "\n${YELLOW}Virtual environment created for $PROJECT_NAME ${COLOR_OFF}\n\n\n"
+
+    deactivate
 
     exit 0
 
