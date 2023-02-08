@@ -5,7 +5,7 @@
 checkProjectExists() {
 
     if [[ -d $PROJECT_NAME ]]; then
-        printf "${YELLOW} Directory $PROJECT_NAME already exists, please check ${COLOR_OFF}\n"
+        printf "${RED}Erro:=${YELLOW} Directory $PROJECT_NAME already exists, please check🔴${COLOR_OFF}\n"
         exit 1
     fi
 
@@ -16,12 +16,12 @@ checkProjectExists() {
 checkParameters() {
 
     if [[ -z $PROJECT_NAME ]]; then
-        printf "${YELLOW}Please enter a valid project name\n${COLOR_OFF}"
+        printf "${RED}Erro:=${YELLOW}Please enter a valid project name🔴${COLOR_OFF}\n"
         exit 1
     fi
 
     if [[ $PROJECT_NAME =~ [^a-zA-Z0-9_-] ]]; then
-        printf "${YELLOW}Enter only numbers and letters\n${COLOR_OFF}"
+        printf "${RED}Erro:=${YELLOW}Enter only numbers and letters🔴${COLOR_OFF}\n"
         exit 1
     fi
 
@@ -30,7 +30,7 @@ checkParameters() {
 
 createPackages() {
 
-    printf "${GREEN}CREATING THE PACKAGES${RED}...<<${COLOR_OFF}\n\n"
+    printf "${GREEN}CREATING THE PACKAGES${RED}...🟡${COLOR_OFF}\n\n"
 
     mkdir $PROJECT_NAME && cd $PROJECT_NAME
 
@@ -38,31 +38,25 @@ createPackages() {
 
     mkdir $DIR_TESTS
 
-    printf "${GREEN}FORTRESS RAISED${RED}...<<${COLOR_OFF}\n\n"
+    printf "${GREEN}generated packages 🟢${COLOR_OFF}\n\n"
 
-    printf "${GREEN}VIRTUALIZING STRUCTURE${RED}...<<${COLOR_OFF}\n\n"
+    printf "${GREEN}virtualizing and activating environment${RED}...🟡<<${COLOR_OFF}\n\n"
 
     python -m venv venv-$PROJECT_NAME
 
-    printf "${GREEN}ENABLING VIRTUALIZED ENVIRONMENT${RED}...<<${COLOR_OFF}\n\n"
-
-    printf "PROJECT_NAME:venv-$PROJECT_NAME\n"
+    printf "${GREEN}Virtual environment created for venv-$PROJECT_NAME...🟢<<${COLOR_OFF}\n\n"
 
 }
 
 createModules() {
 
-    # printf $sentence
-
-    printf "\n${YELLOW}... libraries successfully installed ...${COLOR_OFF}\n\n"
-
-    printf "\n${YELLOW}･｡･｡ creating development modules${COLOR_OFF}\n\n"
+    printf "${YELLOW}creating development modules${COLOR_OFF}\n\n"
 
     touch $PROJECT_NAME/__init__.py
 
     touch $PROJECT_NAME/app.py
 
-    printf "\n${YELLOW}･｡･｡ creating test modules${COLOR_OFF}\n\n"
+    printf "${YELLOW}creating test modules${COLOR_OFF}\n\n"
 
     touch $DIR_TESTS/__init__.py
 
@@ -90,31 +84,39 @@ creatingEnvironment() {
 }
 
 configLibs() {
- 
-    counter=0
-
-    total=${#LIBS_PYTHON[@]}
-
-    for item in ${LIBS_PYTHON[@]}
-    do
     
-        $comando $item
+    COUNTER=0
 
-        printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
+    LEN_LIBS_PYTHON=${#LIBS_PYTHON[@]}
 
-        let counter++
+    python_library=""
 
-        if [[ counter -lt total ]]; then
-            sentence+=$item"|"
-        else
-            sentence+=$item
-        fi
+    {
+        for item in ${LIBS_PYTHON[@]}
+        do
+        
+            python_library=$item
 
-        sleep 3
-    done
+            $comando $item
 
-    printf $sentence
+            printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
 
+            let COUNTER++
+
+            if [[ COUNTER -lt $LEN_LIBS_PYTHON ]]; then
+                requirements+=$item"\|"
+            else
+                requirements+=$item
+            fi
+
+            sleep 3
+        done
+
+    } || {
+        printf "${RED}Erro:=${YELLOW}Failed to install python library $python_library 🔴${COLOR_OFF}\n"
+    }
+
+    printf "\n${YELLOW}libraries successfully installed 🟢${COLOR_OFF}\n\n"
 
     if [[ $VERBOSE -eq 0 ]]; then 
         
@@ -130,12 +132,20 @@ configLibs() {
 
 createRequirements() {
 
-    printf "\n${YELLOW}generate requirements ...${COLOR_OFF}\n\n"
+    requirements=""
 
-    # $(pip freeze | grep -i $sentence > requirements.txt)
-    $(pip freeze | grep -E $sentence > requirements.txt)
+    configLibs
 
-    printf "\n${YELLOW}... nothing else to do ...${COLOR_OFF}\n\n"
+    printf "${YELLOW}requirements being generated...🟡${COLOR_OFF}\n\n"
+
+    if [[ ! -n $requirements ]]; then
+        printf "${RED}Erro:=${YELLOW}No python libraries to compose application file 🔴${COLOR_OFF}\n"
+        exit 1
+    fi
+
+    $(pip freeze | grep -i $requirements > requirements.txt)
+
+    printf "${YELLOW}requirements successfully generated 🟢${COLOR_OFF}\n\n"
 
 }
 
@@ -143,7 +153,7 @@ if checkProjectExists; then
 
     if checkParameters; then
 
-        printf "\n\n\n${GREEN}[¬º-°]¬${RED}.*･｡ﾟ>>...${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION...${GREEN}ԅ(≖‿≖ԅ)\n\n\n"
+        printf "\n\n\n${GREEN}[¬º-°]¬${RED}.*･｡ﾟ>>...${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION...🟡${GREEN}\n\n\n"
 
         createPackages
 
@@ -151,13 +161,11 @@ if checkProjectExists; then
 
         creatingEnvironment
 
-        configLibs
-
         createRequirements
 
-        printf "${GREEN}ԅ(≖‿≖ԅ)\n\n\n"
+        printf "${YELLOW}Virtual environment created for $PROJECT_NAME 🟢${COLOR_OFF}\n\n"
 
-        printf "\n${YELLOW}Virtual environment created for $PROJECT_NAME ${COLOR_OFF}\n\n\n"
+        printf "${GREEN}ԅ(≖‿≖ԅ)\n\n"
 
         deactivate
 
