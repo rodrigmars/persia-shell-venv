@@ -40,17 +40,17 @@ createPackages() {
 
     printf "${GREEN}generated packages 🟢${COLOR_OFF}\n\n"
 
-    printf "${GREEN}virtualizing and activating environment${RED}...🟡<<${COLOR_OFF}\n\n"
+    printf "${GREEN}virtualizing and activating environment...🟡${COLOR_OFF}\n\n"
 
     python -m venv venv-$PROJECT_NAME
 
-    printf "${GREEN}virtual environment created for venv-$PROJECT_NAME...🟢<<${COLOR_OFF}\n\n"
+    printf "${GREEN}virtual environment created for venv-$PROJECT_NAME...🟢${COLOR_OFF}\n\n"
 
 }
 
 createModules() {
 
-    printf "${YELLOW}creating program and test modules...🟡${COLOR_OFF}\n\n"
+    printf "${GREEN}creating program and test modules...🟡${COLOR_OFF}\n\n"
 
     touch $PROJECT_NAME/__init__.py
 
@@ -60,10 +60,9 @@ createModules() {
 
     touch $DIR_TESTS/test_main.py
 
-    printf "${YELLOW}modules created 🟢${COLOR_OFF}\n\n"
+    printf "${GREEN}modules created 🟢${COLOR_OFF}\n\n"
 
 }
-
 
 creatingEnvironment() {
 
@@ -72,12 +71,17 @@ creatingEnvironment() {
     printf "PATH:$(which python)\n"
 
     printf "PYTHON_VERSION:$(python --version)\n\n" 
-    
-    if [[ $VERBOSE -eq 1 ]]; then comando="pip install -q"; else comando="pip install"; fi
-    
-    printf "${GREEN}updating pip tool...<<${COLOR_OFF}\n\n"
+}
 
-    python -m $comando --upgrade pip   
+updatingPIP() {
+
+    printf "${GREEN}updating pip tool...${COLOR_OFF}\n\n"
+
+    if [[ $VERBOSE -eq 1 ]]; then comando="pip install -q"; else comando="pip install"; fi
+
+    python -m $comando --upgrade pip
+
+    printf "${GREEN}pip updated to version:\n$(pip --version) 🟢${COLOR_OFF}\n\n"
 }
 
 configLibs() {
@@ -123,8 +127,8 @@ configLibs() {
 managePythonLibraries() {
 
     requirements=""
-
-    printf "${yellow}downloading and installing libraries...🟡${color_off}\n\n"
+    
+    printf "${GREEN}downloading and installing libraries...🟡${COLOR_OFF}\n\n"
 
     {
         configLibs
@@ -133,19 +137,23 @@ managePythonLibraries() {
         exit 1
     }
 
-    printf "${YELLOW}libraries successfully installed 🟢${COLOR_OFF}\n\n"
+    printf "${GREEN}libraries successfully installed 🟢${COLOR_OFF}\n\n"
 
-
-    printf "${YELLOW}requirements being generated...🟡${COLOR_OFF}\n\n"
+    printf "${GREEN}requirements being generated...🟡${COLOR_OFF}\n\n"
 
     if [[ ! -n $requirements ]]; then
         printf "${RED}Erro:=${YELLOW}No python libraries to compose application file 🔴${COLOR_OFF}\n\n"
         exit 1
     fi
 
-    $(pip freeze | grep -i $requirements > requirements.txt)
+    {
+        $(pip freeze | grep -i $requirements > requirements.txt)
+    } || {
+        printf "${RED}Erro:=${YELLOW}Error when trying to generate requirements file 🔴${COLOR_OFF}\n"
+        exit 1
+    }
 
-    printf "${YELLOW}requirements successfully generated 🟢${COLOR_OFF}\n\n"
+    printf "${GREEN}requirements successfully generated 🟢${COLOR_OFF}\n\n"
 
 }
 
@@ -161,9 +169,11 @@ if checkProjectExists; then
 
         creatingEnvironment
 
+        updatingPIP
+
         managePythonLibraries
 
-        printf "${YELLOW}Virtual environment created for $PROJECT_NAME 🟢${COLOR_OFF}\n\n"
+        printf "${GREEN}Virtual environment created for $PROJECT_NAME 🟢${COLOR_OFF}\n\n"
 
         printf "${GREEN}ԅ(≖‿≖ԅ)\n\n"
 

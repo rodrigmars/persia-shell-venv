@@ -18,7 +18,7 @@ For a perfect execution, I chose to use a configuration file [init.conf](https:/
   - verbosity in debug output
 
 - LIBS_PYTHON
-  - python library list
+  - enter your libraries here
   
 ## How to run it
 
