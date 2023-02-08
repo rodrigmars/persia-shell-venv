@@ -3,34 +3,22 @@
 . init.conf
 
 checkProjectExists() {
+    
+    MESSAGE_ERROR="Directory $PROJECT_NAME already exists, please check"
 
-    if [[ -d $PROJECT_NAME ]]; then
-        printf "${RED}Erro:=${YELLOW} Directory $PROJECT_NAME already exists, please check 🔴${COLOR_OFF}\n\n"
-        exit 1
-    fi
-
-    return 0
+    [[ -d $PROJECT_NAME ]] && logExitError "$MESSAGE_ERROR" || return 0
 }
-
 
 checkParameters() {
 
-    if [[ -z $PROJECT_NAME ]]; then
-        printf "${RED}Erro:=${YELLOW}Please enter a valid project name 🔴${COLOR_OFF}\n\n"
-        exit 1
-    fi
-
-    if [[ $PROJECT_NAME =~ [^a-zA-Z0-9_-] ]]; then
-        printf "${RED}Erro:=${YELLOW}Enter only numbers and letters 🔴${COLOR_OFF}\n\n"
-        exit 1
-    fi
-
+    [[ -z $PROJECT_NAME ]] && logExitError "Please enter a valid project name" || 
+    [[ $PROJECT_NAME =~ [^a-zA-Z0-9_-] ]] && logExitError "Enter only numbers and letters" || 
     return 0
 }
 
 createPackages() {
 
-    printf "${GREEN}creating the packages$...🟡${COLOR_OFF}\n\n"
+    logMessage "creating the packages$..."
 
     mkdir $PROJECT_NAME && cd $PROJECT_NAME
 
@@ -38,19 +26,19 @@ createPackages() {
 
     mkdir $DIR_TESTS
 
-    printf "${GREEN}generated packages 🟢${COLOR_OFF}\n\n"
+    logMessage "generated packages"
 
-    printf "${GREEN}virtualizing and activating environment...🟡${COLOR_OFF}\n\n"
+    logMessage "virtualizing and activating environment..."
 
     python -m venv venv-$PROJECT_NAME
 
-    printf "${GREEN}virtual environment created for venv-$PROJECT_NAME...🟢${COLOR_OFF}\n\n"
+    logMessage "virtual environment created for venv-$PROJECT_NAME..."
 
 }
 
 createModules() {
 
-    printf "${GREEN}creating program and test modules...🟡${COLOR_OFF}\n\n"
+    logMessage "creating program and test modules..."
 
     touch $PROJECT_NAME/__init__.py
 
@@ -60,7 +48,7 @@ createModules() {
 
     touch $DIR_TESTS/test_main.py
 
-    printf "${GREEN}modules created 🟢${COLOR_OFF}\n\n"
+    logMessage "modules created"
 
 }
 
@@ -68,38 +56,41 @@ creatingEnvironment() {
 
     source venv-$PROJECT_NAME/bin/activate
 
-    printf "PATH:$(which python)\n"
+    logMessage "PATH:${YELLOW}$(which python)"
 
-    printf "PYTHON_VERSION:$(python --version)\n\n" 
+    logMessage "PYTHON_VERSION:${YELLOW}$(python --version)" 
+}
+
+logMessage() {
+
+    printf "${GREEN}$1 🟢${COLOR_OFF}\n\n"
 }
 
 updatingPIP() {
 
-    printf "${GREEN}updating pip tool...${COLOR_OFF}\n\n"
-
-    if [[ $VERBOSE -eq 1 ]]; then comando="pip install -q"; else comando="pip install"; fi
+    logMessage "updating pip tool..."
+    
+    [[ $VERBOSE -eq 1 ]] && comando="pip install -q" || comando="pip install"
 
     python -m $comando --upgrade pip
 
-    printf "${GREEN}pip updated to version:\n$(pip --version) 🟢${COLOR_OFF}\n\n"
+    logMessage "pip updated to version:${YELLOW}\n$(pip --version)"
 }
 
 configLibs() {
+
+    logMessage "downloading and installing libraries..."
     
     COUNTER=0
 
     LEN_LIBS_PYTHON=${#LIBS_PYTHON[@]}
 
-    python_library=""
-
     for item in ${LIBS_PYTHON[@]}
     do
     
-        python_library=$item
+        $comando $item || logExitError "Error installing package $item"
 
-        $comando $item
-
-        printf "${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
+        printf "${YELLOW}>>...lib $item\n\n"
 
         let COUNTER++
 
@@ -111,49 +102,26 @@ configLibs() {
 
         sleep 3
     done
+    
+    logMessage "libraries successfully installed"
 
-    if [[ $VERBOSE -eq 0 ]]; then 
-        
-        printf "${YELLOW}Collecting data from installed libraries${COLOR_OFF}\n\n"
-
-        for item in $LIBS_PYTHON
-        do
-            pip show $item
-            sleep 3
-        done
-    fi
 }
 
 managePythonLibraries() {
 
     requirements=""
+
+    configLibs
+
+    logMessage "requirements being generated..."
+
+    [[ ! -n $requirements ]] && logExitError "No python libraries to compose requirements file"
+
+    $(pip freeze | grep -i $requirements > requirements.txt) || logExitError
     
-    printf "${GREEN}downloading and installing libraries...🟡${COLOR_OFF}\n\n"
+    # "Error when trying to generate requirements file"
 
-    {
-        configLibs
-    } || {
-        printf "${RED}Erro:=${YELLOW}Failed to install python library $python_library 🔴${COLOR_OFF}\n"
-        exit 1
-    }
-
-    printf "${GREEN}libraries successfully installed 🟢${COLOR_OFF}\n\n"
-
-    printf "${GREEN}requirements being generated...🟡${COLOR_OFF}\n\n"
-
-    if [[ ! -n $requirements ]]; then
-        printf "${RED}Erro:=${YELLOW}No python libraries to compose application file 🔴${COLOR_OFF}\n\n"
-        exit 1
-    fi
-
-    {
-        $(pip freeze | grep -i $requirements > requirements.txt)
-    } || {
-        printf "${RED}Erro:=${YELLOW}Error when trying to generate requirements file 🔴${COLOR_OFF}\n"
-        exit 1
-    }
-
-    printf "${GREEN}requirements successfully generated 🟢${COLOR_OFF}\n\n"
+    logMessage "requirements successfully generated"
 
 }
 
@@ -161,7 +129,9 @@ if checkProjectExists; then
 
     if checkParameters; then
 
-        printf "\n\n\n${GREEN}[¬º-°]¬${RED}.*･｡ﾟ>>...${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION...🟡${GREEN}\n\n\n"
+        clear
+
+        printf "\n\n\n${GREEN}=|º|= ${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION {GREEN}=|º|=${GREEN}\n\n\n"
 
         createPackages
 
@@ -173,9 +143,9 @@ if checkProjectExists; then
 
         managePythonLibraries
 
-        printf "${GREEN}Virtual environment created for $PROJECT_NAME 🟢${COLOR_OFF}\n\n"
+        logMessage "Virtual environment created for $PROJECT_NAME"
 
-        printf "${GREEN}ԅ(≖‿≖ԅ)\n\n"
+        printf "${RED}ԅ(≖‿≖ԅ)\n\n"
 
         deactivate
 

@@ -8,18 +8,18 @@ With this script it is possible to create a small castle to store the python exe
 
 For a perfect execution, I chose to use a configuration file [init.conf](https://github.com/rodrigmars/persia-shell-venv/blob/main/init.conf) that loads necessary information and dependencies as follows:
 
-- project_name
+- PROJECT_NAME
   - project name information
-  
+
+- LIBS_PYTHON
+  - enter your libraries here
+
 - DIR_TESTS
   - test directory
   
 - VERBOSE
   - verbosity in debug output
 
-- LIBS_PYTHON
-  - enter your libraries here
-  
 ## How to run it
 
 ```bash
