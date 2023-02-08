@@ -5,7 +5,7 @@
 checkProjectExists() {
 
     if [[ -d $PROJECT_NAME ]]; then
-        printf "${RED}Erro:=${YELLOW} Directory $PROJECT_NAME already exists, please check🔴${COLOR_OFF}\n"
+        printf "${RED}Erro:=${YELLOW} Directory $PROJECT_NAME already exists, please check 🔴${COLOR_OFF}\n\n"
         exit 1
     fi
 
@@ -16,12 +16,12 @@ checkProjectExists() {
 checkParameters() {
 
     if [[ -z $PROJECT_NAME ]]; then
-        printf "${RED}Erro:=${YELLOW}Please enter a valid project name🔴${COLOR_OFF}\n"
+        printf "${RED}Erro:=${YELLOW}Please enter a valid project name 🔴${COLOR_OFF}\n\n"
         exit 1
     fi
 
     if [[ $PROJECT_NAME =~ [^a-zA-Z0-9_-] ]]; then
-        printf "${RED}Erro:=${YELLOW}Enter only numbers and letters🔴${COLOR_OFF}\n"
+        printf "${RED}Erro:=${YELLOW}Enter only numbers and letters 🔴${COLOR_OFF}\n\n"
         exit 1
     fi
 
@@ -30,7 +30,7 @@ checkParameters() {
 
 createPackages() {
 
-    printf "${GREEN}CREATING THE PACKAGES${RED}...🟡${COLOR_OFF}\n\n"
+    printf "${GREEN}creating the packages$...🟡${COLOR_OFF}\n\n"
 
     mkdir $PROJECT_NAME && cd $PROJECT_NAME
 
@@ -44,23 +44,23 @@ createPackages() {
 
     python -m venv venv-$PROJECT_NAME
 
-    printf "${GREEN}Virtual environment created for venv-$PROJECT_NAME...🟢<<${COLOR_OFF}\n\n"
+    printf "${GREEN}virtual environment created for venv-$PROJECT_NAME...🟢<<${COLOR_OFF}\n\n"
 
 }
 
 createModules() {
 
-    printf "${YELLOW}creating development modules${COLOR_OFF}\n\n"
+    printf "${YELLOW}creating program and test modules...🟡${COLOR_OFF}\n\n"
 
     touch $PROJECT_NAME/__init__.py
 
     touch $PROJECT_NAME/app.py
 
-    printf "${YELLOW}creating test modules${COLOR_OFF}\n\n"
-
     touch $DIR_TESTS/__init__.py
 
     touch $DIR_TESTS/test_main.py
+
+    printf "${YELLOW}modules created 🟢${COLOR_OFF}\n\n"
 
 }
 
@@ -75,7 +75,7 @@ creatingEnvironment() {
     
     if [[ $VERBOSE -eq 1 ]]; then comando="pip install -q"; else comando="pip install"; fi
     
-    printf "${GREEN}UPDATING PIP TOOL${RED}...<<${COLOR_OFF}\n\n"
+    printf "${GREEN}updating pip tool...<<${COLOR_OFF}\n\n"
 
     python -m $comando --upgrade pip   
 }
@@ -95,7 +95,7 @@ configLibs() {
 
         $comando $item
 
-        printf "\n${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
+        printf "${YELLOW}>>...lib $item${COLOR_OFF}\n\n"
 
         let COUNTER++
 
@@ -110,7 +110,7 @@ configLibs() {
 
     if [[ $VERBOSE -eq 0 ]]; then 
         
-        printf "\n${YELLOW}Collecting data from installed libraries${COLOR_OFF}\n\n"
+        printf "${YELLOW}Collecting data from installed libraries${COLOR_OFF}\n\n"
 
         for item in $LIBS_PYTHON
         do
@@ -124,7 +124,7 @@ managePythonLibraries() {
 
     requirements=""
 
-    printf "\n${yellow}downloading and installing libraries...🟡${color_off}\n\n"
+    printf "${yellow}downloading and installing libraries...🟡${color_off}\n\n"
 
     {
         configLibs
@@ -133,13 +133,13 @@ managePythonLibraries() {
         exit 1
     }
 
-    printf "\n${YELLOW}libraries successfully installed 🟢${COLOR_OFF}\n\n"
+    printf "${YELLOW}libraries successfully installed 🟢${COLOR_OFF}\n\n"
 
 
     printf "${YELLOW}requirements being generated...🟡${COLOR_OFF}\n\n"
 
     if [[ ! -n $requirements ]]; then
-        printf "${RED}Erro:=${YELLOW}No python libraries to compose application file 🔴${COLOR_OFF}\n"
+        printf "${RED}Erro:=${YELLOW}No python libraries to compose application file 🔴${COLOR_OFF}\n\n"
         exit 1
     fi
 
@@ -160,6 +160,8 @@ if checkProjectExists; then
         createModules
 
         creatingEnvironment
+
+        managePythonLibraries
 
         printf "${YELLOW}Virtual environment created for $PROJECT_NAME 🟢${COLOR_OFF}\n\n"
 
