@@ -61,15 +61,15 @@ creating_environment() {
     log_message "PYTHON_VERSION:${YELLOW}$(python --version)" 
 }
 
-updating_pip() {
+check_pip_update() {
 
-    log_message "updating pip tool..."
+    log_message "checking updating from pip tool..."
     
     [[ $VERBOSE -eq 1 ]] && comando="pip install -q" || comando="pip install"
 
     python -m $comando --upgrade pip
 
-    log_message "pip updated to version:${YELLOW}\n$(pip --version)"
+    log_message "check completed - pip version:${YELLOW}\n$(pip --version)"
 }
 
 install_libraries() {
@@ -98,9 +98,9 @@ creating_requirements() {
 
     [[ ! -n $requirements ]] && log_error "No python libraries to compose requirements file"
 
-    $(pip freeze | grep -i $requirements > "$REQUIREMENTS_FILE" || log_error)
+    pip freeze | grep -i $requirements > $REQUIREMENTS_FILE || log_error
 
-    [[ ! -s "$REQUIREMENTS_FILE" ]] && log_error "Error when trying to generate requirements file" || 
+    [[ ! -s $REQUIREMENTS_FILE ]] && log_error "Error when trying to generate requirements file" || 
 
     log_message "requirements successfully generated"
 
@@ -120,7 +120,7 @@ if check_project_exists; then
 
         creating_environment
 
-        updating_pip
+        check_pip_update
 
         install_libraries
 
