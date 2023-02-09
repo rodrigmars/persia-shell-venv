@@ -4,9 +4,8 @@
 
 check_project_exists() {
 
-    MESSAGE_ERROR="Directory $PROJECT_NAME already exists, please check"
-
-    [[ -d $PROJECT_NAME ]] && log_error "$MESSAGE_ERROR" || return 0
+    [[ -d $PROJECT_NAME ]] && log_error "Directory $PROJECT_NAME already exists, please check" || 
+    return 0
 }
 
 check_parameters() {
@@ -126,9 +125,7 @@ if check_project_exists; then
 
         creating_requirements
 
-        log_message "Virtual environment created for $PROJECT_NAME"
-
-        printf "${RED}ԅ(≖‿≖ԅ)\n\n"
+        log_message "Virtual environment created for $PROJECT_NAME ${RED}ԅ(≖‿≖ԅ)"
 
         deactivate
 
