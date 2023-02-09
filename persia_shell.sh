@@ -2,23 +2,23 @@
 
 . init.conf
 
-checkProjectExists() {
+check_project_exists() {
 
     MESSAGE_ERROR="Directory $PROJECT_NAME already exists, please check"
 
-    [[ -d $PROJECT_NAME ]] && logExitError "$MESSAGE_ERROR" || return 0
+    [[ -d $PROJECT_NAME ]] && log_error "$MESSAGE_ERROR" || return 0
 }
 
-checkParameters() {
+check_parameters() {
 
-    [[ -z $PROJECT_NAME ]] && logExitError "Please enter a valid project name" || 
-    [[ $PROJECT_NAME =~ [^a-zA-Z0-9_-] ]] && logExitError "Enter only numbers and letters" || 
+    [[ -z $PROJECT_NAME ]] && log_error "Please enter a valid project name" || 
+    [[ $PROJECT_NAME =~ [^a-zA-Z0-9_-] ]] && log_error "Enter only numbers and letters" || 
     return 0
 }
 
-createPackages() {
+creating_packages() {
 
-    logMessage "creating the packages$..."
+    log_message "creating the packages$..."
 
     mkdir $PROJECT_NAME && cd $PROJECT_NAME
 
@@ -26,19 +26,19 @@ createPackages() {
 
     mkdir $DIR_TESTS
 
-    logMessage "generated packages"
+    log_message "generated packages"
 
-    logMessage "virtualizing and activating environment..."
+    log_message "virtualizing and activating environment..."
 
     python -m venv venv-$PROJECT_NAME
 
-    logMessage "virtual environment created for venv-$PROJECT_NAME..."
+    log_message "virtual environment created for venv-$PROJECT_NAME..."
 
 }
 
-createModules() {
+creating_modules() {
 
-    logMessage "creating program and test modules..."
+    log_message "creating program and test modules..."
 
     touch $PROJECT_NAME/__init__.py
 
@@ -48,87 +48,85 @@ createModules() {
 
     touch $DIR_TESTS/test_main.py
 
-    logMessage "modules created"
+    log_message "modules created"
 
 }
 
-creatingEnvironment() {
+creating_environment() {
 
     source venv-$PROJECT_NAME/bin/activate
 
-    logMessage "PATH:${YELLOW}$(which python)"
+    log_message "PATH:${YELLOW}$(which python)"
 
-    logMessage "PYTHON_VERSION:${YELLOW}$(python --version)" 
+    log_message "PYTHON_VERSION:${YELLOW}$(python --version)" 
 }
 
-updatingPIP() {
+updating_pip() {
 
-    logMessage "updating pip tool..."
+    log_message "updating pip tool..."
     
     [[ $VERBOSE -eq 1 ]] && comando="pip install -q" || comando="pip install"
 
     python -m $comando --upgrade pip
 
-    logMessage "pip updated to version:${YELLOW}\n$(pip --version)"
+    log_message "pip updated to version:${YELLOW}\n$(pip --version)"
 }
 
-install_python_libraries() {
+install_libraries() {
 
-    logMessage "downloading and installing libraries..."
+    log_message "downloading and installing libraries..."
     
     for item in $LIBS_PYTHON
     do
     
-        $comando $item || logExitError "Error installing package $item"
+        $comando $item || log_error "Error installing package $item"
 
         printf "${YELLOW}>>...lib $item\n\n"
 
         sleep 3
     done
 
-    logMessage "libraries successfully installed"
+    log_message "libraries successfully installed"
 
 }
 
-create_requirements_file() {
+creating_requirements() {
 
-    logMessage "requirements being generated..."
+    log_message "requirements being generated..."
 
     requirements=${LIBS_PYTHON// /\\|}
 
-    [[ ! -n $requirements ]] && logExitError "No python libraries to compose requirements file"
+    [[ ! -n $requirements ]] && log_error "No python libraries to compose requirements file"
 
-    $(pip freeze | grep -i $requirements > "$REQUIREMENTS_FILE" || logExitError)
+    $(pip freeze | grep -i $requirements > "$REQUIREMENTS_FILE" || log_error)
 
-    [[ ! -s "$REQUIREMENTS_FILE" ]] && logExitError "Error when trying to generate requirements file" || 
+    [[ ! -s "$REQUIREMENTS_FILE" ]] && log_error "Error when trying to generate requirements file" || 
 
-    logMessage "requirements successfully generated"
+    log_message "requirements successfully generated"
 
 }
 
-if checkProjectExists; then
+if check_project_exists; then
 
-    if checkParameters; then
-
-        [[ -s $REQUIREMENTS_FILE ]] && logExitError "Error when trying to generate requirements file"
+    if check_parameters; then
 
         clear
 
-        printf "\n\n\n${GREEN}=|º|= ${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION {GREEN}=|º|=${GREEN}\n\n\n"
+        printf "\n\n\n${GREEN}=|º|= ${YELLOW}STARTING ENVIRONMENT VIRTUALIZATION ${GREEN}=|º|=${GREEN}\n\n\n"
 
-        createPackages
+        creating_packages
 
-        createModules
+        creating_modules
 
-        creatingEnvironment
+        creating_environment
 
-        updatingPIP
+        updating_pip
 
-        install_python_libraries
+        install_libraries
 
-        create_requirements_file
+        creating_requirements
 
-        logMessage "Virtual environment created for $PROJECT_NAME"
+        log_message "Virtual environment created for $PROJECT_NAME"
 
         printf "${RED}ԅ(≖‿≖ԅ)\n\n"
 
