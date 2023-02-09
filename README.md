@@ -26,7 +26,7 @@ For a perfect execution, I chose to use a configuration file [init.conf](https:/
 ## How to run it
 
 ```bash
-chmod +x persia_shell.sh
+chmod u+x persia_shell
 
 ./persia_shell.sh
 ```
